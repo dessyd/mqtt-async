@@ -8,6 +8,7 @@ python3 -m venv .venv
 # Select Interpreter in VS Code
 # Activate it
 source .venv/bin/activate
+python -> python3 -> /opt/homebrew/Cellar/python@3.9/3.9.12/Frameworks/Python.framework/Versions/3.9/bin/python3.9
 # make sure pip is up to date
 pip install --upgrade pip
 # install project's requirements
