@@ -1,90 +1,118 @@
-import urllib.request
-import ssl, time, platform, json
 from configparser import ConfigParser
+import paho.mqtt.client as mqtt
+import time, requests, socket
+##turns off the warning that is generated below because using self signed ssl cert
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
-def send_event(splunk_host, splunk_port, auth_token, log_data):
+# All Classes defined here are a mirror of the config file stanzas
+# Broker holds a MQTT Broker connection
+class Broker:
+    def __init__(self):
+      self.host = "mqtt.eclipseprojects.io"
+      self.port = 1883
+      self.topic = "$SYS/#"
 
-   """Sends an event to the HTTP Event collector of a Splunk Instance"""
+# Splunk holds a Splunk HEC connection
+class Splunk:
+    def __init__(self):
+      self.host = "localhost"
+      self.port = 8088
+      self.token = "00000000-0000-0000-0000-000000000000"
+
+def on_connect(client, userdata, flags, rc):
+   print("Connected With Result Code %s" %rc)
+   client.subscribe(broker.topic, qos=1)
+
+def on_message(client, userdata, message):
+   hec_post(message.topic, message.payload.decode())
+
+def hec_post(topic, payload):
+
+   print("Topic: %s" %topic)
+   print("Payload: %s" %payload)
+   print("---")
+
+   # Last sub topic is the measure name
+   # payload being the measrement itself
+   metric_name = "metric_name:"+topic.rsplit("/",1)[-1]
+   metric_data = {
+      "topic": topic,
+      metric_name: payload
+   }
    
-   try:
-      # Integer value representing epoch time format
-      event_time = time.time()
-      
-      # String representing the host name or IP
-      host_id = platform.node()
-      
-      # String representing the Splunk sourcetype, see:
-      # docs.splunk.com/Documentation/Splunk/6.3.2/Data/Listofpretrainedsourcetypes
-      source_type = "access_combined"
-      
-      # Create request URL
-      request_url = "https://%s:%i/services/collector" % (splunk_host, splunk_port)
-      
-      post_data = {
-         "time": event_time, 
-         "host": host_id,
-         "sourcetype": source_type,
-         "event": log_data
-      }
-      
-      # Encode data in JSON utf-8 format
-      data = json.dumps(post_data).encode('utf8')
-      
-      # Create auth header
-      auth_header = "Splunk %s" % auth_token
-      headers = {'Authorization' : auth_header}
-      
-      # Create request
-      # Avoid Self signed errors
-      ctx = ssl.create_default_context()
-      ctx.check_hostname = False
-      ctx.verify_mode = ssl.CERT_NONE
+   post_data = {
+      "time": time.time(), 
+      "host": socket.gethostname(),
+      "event": "metric",
+      "source": "metrics",
+      "sourcetype": "mqtt",
+      "fields": metric_data
+   }
+   
+   print(post_data)
 
-      req = urllib.request.Request(request_url, data, headers)
-      response = urllib.request.urlopen(req, context=ctx)
-      
-      # read response, should be in JSON format
-      read_response = response.read()
-      
+   # Create request URL
+   request_url = "https://%s:%s/services/collector" % (splunk.host, splunk.port)
+   
+   # Create auth header
+   auth_header = "Splunk %s" % splunk.token
+   authHeader = {'Authorization' : auth_header}
+
+   # Create request
+   post_success = False
+
+   try:
+
+      r = requests.post(request_url, headers=authHeader, json=post_data, verify=False)
       try:
-         response_json = json.loads(str(read_response)[2:-1])
-         
-         if "text" in response_json:
-            if response_json["text"] == "Success":
-               post_success = True
-            else:
-               post_success = False
-      except:
-         post_success = False
-      
-      if post_success == True:
-         # Event was recieved successfully
-         print ("Event was recieved successfully")
-      else:
-         # Event returned an error
-         print ("Error sending request.")
-      
+         r.raise_for_status()
+      except requests.exceptions.HTTPError as e:
+         # Whoops it wasn't a 200
+         print("Error: " + str(e))
+         return post_success
+
+      # Must have been a 200 status code
+      print(r.json())
+
    except Exception as err:
       # Network or connection error
-      post_success = False
-      print ("Error sending request")
-      print (str(err))
+      print ("Error sending request " + str(err))
 
    return post_success
 
 def main():
-    config = ConfigParser()
-    config.read('mqtt.conf')
-    splunk_host = config.get('Splunk','url')
-    splunk_port = config.getint('Splunk','port')
-    splunk_auth_token = config.get('Splunk','token')
 
-    log_data = {
-        "data_point_1": 50,
-        "data_point_2": 20,
-    }
+   # Get the MQTT Broker connection details.
+   # 
+   global broker
+   broker = Broker()
 
-    result = send_event(splunk_host, splunk_port, splunk_auth_token, log_data)
-    print (result)
+   # Get the Splunk HEC details
+   # Initialized once here
+   # Used in the HEC post function
+   global splunk 
+   splunk = Splunk()
+
+   # Initialize the connection details from the config file
+   config = ConfigParser()
+   config.read('mqtt.conf')
+
+   # Each Class mirrors a stanza
+   broker.host = config.get('Broker','host')
+   broker.port = config.getint('Broker','port')
+   broker.topic = config.get('Broker','topic')
+
+   splunk.host = config.get('Splunk','host')
+   splunk.port = config.getint('Splunk', 'port')
+   splunk.token = config.get('Splunk','token')
+
+   client = mqtt.Client()
+   client.on_connect = on_connect
+   client.on_message = on_message
+
+   client.connect(broker.host, broker.port, 60)
+
+   client.loop_forever()
 
 main()
