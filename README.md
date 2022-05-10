@@ -24,9 +24,21 @@ And the finally the pressure will be published here:
 
 ## Read in Splunk
 
-Splunk can then handle these as separate metrics and process them:
+Splunk will receive a <metric> having its value read from the payload, its <metricName>  will be the last subtopic name in the hierarchy, and an extra dimension containing the full topic hierarchy.
+
+Example
+
+If the MQTT topic `Things/board-002596FFFE123456/dht11-3/air.humidity` has a payload of `45.3` Splunk will receive a metric named `air.humidity` with a value of `45.3` and a dimension named `Topic` with a value of `Things/board-002596FFFE123456/dht11-3/air.humidity`
+
+
 
 ![Splunk_Metrics](images/Splunk_Metrics.png)
+
+
+
+## Configuration file
+
+There is a single file named `mqtt.conf`that holds all configurations. A template file `mqtt.conf.spec`has details of the configurations stanzas and keys.
 
 ## Local Setup
 
