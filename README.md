@@ -30,7 +30,7 @@ Splunk will receive a `metric` having its value read from the payload, its `metr
 
 If the MQTT topic `Things/board-002596FFFE123456/dht11-3/air.humidity` has a payload of `45.3` Splunk will receive a metric named `air.humidity` with a value of `45.3` and a dimension named `Topic` with a value of `Things/board-002596FFFE123456/dht11-3/air.humidity`
 
-*Splunk Analytics dashboard example*
+#### Splunk Analytics dashboard example
 
 ![Splunk_Metrics](images/Splunk_Metrics.png)
 
