@@ -18,7 +18,7 @@ def main():
     client = mqtt.Client()
     client.connect(broker_host, broker_port, 60)
 
-    schedule.every(10).seconds.do(pub, client)
+    schedule.every(5).seconds.do(pub, client)
     while True:
         schedule.run_pending()
         time.sleep(1)
