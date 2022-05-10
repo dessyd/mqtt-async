@@ -1,5 +1,7 @@
 # MQTT Async code
 
+Pushes IOT measurements published on MQTT to Splunk metrics index through HTTP Event Collector
+
 ## Local Setup
 
 ```bash
