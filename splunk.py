@@ -25,61 +25,68 @@ def on_connect(client, userdata, flags, rc):
    client.subscribe(broker.topic, qos=1)
 
 def on_message(client, userdata, message):
+   print("---")
+   # Post received message to Splunk
    hec_post(message.topic, message.payload.decode())
 
 def hec_post(topic, payload):
+   post_status = False
 
    print("Topic: %s" %topic)
    print("Payload: %s" %payload)
-   print("---")
 
    # Last sub topic is the measure name
-   # payload being the measrement itself
+   # Format it as a metric
    metric_name = "metric_name:"+topic.rsplit("/",1)[-1]
+   # Payload being the measurement itself
    metric_data = {
       "topic": topic,
       metric_name: payload
    }
-   
+   # Format HEC event with metric
    post_data = {
       "time": time.time(), 
       "host": socket.gethostname(),
       "event": "metric",
       "source": "metrics",
-      "sourcetype": "mqtt",
+      "sourcetype": "mqtt_metric",
       "fields": metric_data
    }
-   
-   print(post_data)
 
-   # Create request URL
+   # Create request URL  
    request_url = "https://%s:%s/services/collector" % (splunk.host, splunk.port)
    
    # Create auth header
    auth_header = "Splunk %s" % splunk.token
    authHeader = {'Authorization' : auth_header}
 
-   # Create request
-   post_success = False
-
    try:
-
       r = requests.post(request_url, headers=authHeader, json=post_data, verify=False)
-      try:
-         r.raise_for_status()
-      except requests.exceptions.HTTPError as e:
-         # Whoops it wasn't a 200
-         print("Error: " + str(e))
-         return post_success
+      r.raise_for_status()
+   except requests.exceptions.ConnectionError as err: 
+      print("Splunk refused connection: %s" %err)  
+      return post_status
+   except requests.exceptions.HTTPError as err:
+      # catastrophic error. bail.
+      print("Exception %s" %err)
+      return post_status
+   
+   # Connection is successful
+   # Check Splunk return code
+   try:
+      text = r.json()["text"]
+      code = r.json()["code"]
+   except:
+      print("No valid JSON returned from Splunk")
+      return post_status
 
-      # Must have been a 200 status code
-      print(r.json())
+   if code != 0:
+      print("Splunk error code %s" %code)
+   else:
+      print(text)
+      post_status = True
 
-   except Exception as err:
-      # Network or connection error
-      print ("Error sending request " + str(err))
-
-   return post_success
+   return post_status
 
 def main():
 
