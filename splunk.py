@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 import paho.mqtt.client as mqtt
-import time, requests, socket
+import requests
 ##turns off the warning that is generated below because using self signed ssl cert
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
