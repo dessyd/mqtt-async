@@ -16,16 +16,6 @@ class Broker:
       return str(self.__dict__)
 
 # Splunk holds a Splunk HEC connection
-class Splunk:
-   def __init__(self, host="localhost", port=8088, token="00000000-0000-0000-0000-000000000000"):
-      self.host = host
-      self.port = port
-      self.token = token
-      self.url = "https://%s:%s/services/collector" %(host, port)
-      self.authHeader = {'Authorization' : "Splunk %s" % token}
-   def __str__(self):
-      return str(self.__dict__)
-
 class HecAPI:
   def __init__(self, host="localhost", port=8088, token="00000000-0000-0000-0000-000000000000"):
     self.host = host
@@ -39,17 +29,20 @@ class HecAPI:
       return str(self.__dict__)
 
 class Metric:
-  def __init__(self, topic="Things/#", payload="0.00"):
+  def __init__(self, topic="Things/#", payload="0.00", sourcetype="mqtt_metric"):
     self.topic = topic
     self.payload = payload
+    self.sourcetype = sourcetype
   def post_data(self):
     return { 
       "time": time.time(), 
       "host": socket.gethostname(),
       "event": "metric",
       "source": "metrics",
-      "sourcetype": "mqtt_metric",
-      "fields": {"topic": self.topic, "metric_name:"+self.topic.rsplit("/",1)[-1]: self.payload}
+      "sourcetype": self.sourcetype,
+      "fields": {"topic": self.topic, 
+               "metric_name:"+self.topic.rsplit("/",1)[-1]: self.payload
+               }
       }
   def __str__(self):
     return str(self.__dict__)
@@ -107,21 +100,23 @@ def main():
 
    # Get the MQTT Broker connection details.
    # 
+   broker_stanza = "Broker"
    global broker
    broker = Broker(
-      host=config.get('Broker','host'), 
-      port=config.getint('Broker','port'),
-      topic=config.get('Broker','topic')
+      host=config.get(broker_stanza,'host'), 
+      port=config.getint(broker_stanza,'port'),
+      topic=config.get(broker_stanza,'topic')
       )
 
    # Get the Splunk HEC details
    # Initialized once here
    # Used in the HEC post function
+   hec_stanza = "HecAPI"
    global hec_api
    hec_api = HecAPI(
-      host=config.get('Splunk','host'), 
-      port=config.getint('Splunk','port'), 
-      token=config.get('Splunk','token')
+      host=config.get(hec_stanza,'host'), 
+      port=config.getint(hec_stanza,'port'), 
+      token=config.get(hec_stanza,'token')
       )
 
    client = mqtt.Client()

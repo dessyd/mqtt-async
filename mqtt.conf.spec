@@ -6,7 +6,7 @@
 host = <mqtt address>
 port = 1883
 
-[Splunk]
+[HecAPI]
 host = <splunk servervaddress>
 port = 8088
 token = <hec token>>
