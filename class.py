@@ -14,9 +14,10 @@ class Splunk:
     self.host = host
     self.port = port
     self.token = token
-    self.url = "https://%s:%s/services/collector" %(host, port)
-    self.auth = "Splunk %s" % token
-    self.authHeader = {'Authorization' : self.auth}
+  def url(self):
+    return "https://%s:%s/services/collector" %(self.host, self.port)
+  def authHeader(self):
+    return {'Authorization' : "Splunk %s" % self.token}
   def __str__(self):
       return str(self.__dict__)
 
@@ -36,16 +37,18 @@ class Metric:
 
 def do_print():
     print(splunk)
-    print(splunk.host, splunk.port)
-    print(hec_metric.post_data)
+    print(splunk.url())
+    print(splunk.authHeader())
+    # print(hec_metric.post_data)
 
 def main():
     global splunk, hec_metric
     splunk = Splunk("gurga", 2048)
-    hec_metric = Metric(payload="18.04")
+    splunk.port = 512
+    # hec_metric = Metric(payload="18.04")
     do_print()
-    hec_metric = Metric(payload="23.04", topic="Thing/servo2/uva_index")
-    do_print()
+    # hec_metric = Metric(payload="23.04", topic="Thing/servo2/uva_index")
+    # do_print()
 
 main()
 
