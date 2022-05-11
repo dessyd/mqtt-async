@@ -26,15 +26,30 @@ class Splunk:
    def __str__(self):
       return str(self.__dict__)
 
+class HecAPI:
+  def __init__(self, host="localhost", port=8088, token="00000000-0000-0000-0000-000000000000"):
+    self.host = host
+    self.port = port
+    self.token = token
+  def url(self):
+    return "https://%s:%s/services/collector" %(self.host, self.port)
+  def authHeader(self):
+    return {'Authorization' : "Splunk %s" % self.token}
+  def __str__(self):
+      return str(self.__dict__)
+
 class Metric:
   def __init__(self, topic="Things/#", payload="0.00"):
-    self.post_data = { 
+    self.topic = topic
+    self.payload = payload
+  def post_data(self):
+    return { 
       "time": time.time(), 
       "host": socket.gethostname(),
       "event": "metric",
       "source": "metrics",
       "sourcetype": "mqtt_metric",
-      "fields": {"topic": topic, "metric_name:"+topic.rsplit("/",1)[-1]: payload}
+      "fields": {"topic": self.topic, "metric_name:"+self.topic.rsplit("/",1)[-1]: self.payload}
       }
   def __str__(self):
     return str(self.__dict__)
@@ -56,7 +71,7 @@ def hec_post(topic, payload):
    metric = Metric(topic, payload)
 
    try:
-      r = requests.post(splunk.url, headers=splunk.authHeader, json=metric.post_data, verify=False)
+      r = requests.post(hec_api.url(), headers=hec_api.authHeader(), json=metric.post_data(), verify=False)
       r.raise_for_status()
    except requests.exceptions.ConnectionError as err: 
       print("Splunk refused connection: %s" %err)  
@@ -102,8 +117,8 @@ def main():
    # Get the Splunk HEC details
    # Initialized once here
    # Used in the HEC post function
-   global splunk
-   splunk = Splunk(
+   global hec_api
+   hec_api = HecAPI(
       host=config.get('Splunk','host'), 
       port=config.getint('Splunk','port'), 
       token=config.get('Splunk','token')
