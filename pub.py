@@ -14,9 +14,13 @@ def pub(client):
     Payload=random.randint(0,10000)/100
     client.publish(topic=Topic, payload=Payload, qos=1, retain=False)
 
+def conn(client):
+    client.connect(broker_host, broker_port, 60)
+
 def main():
     client = mqtt.Client()
     client.connect(broker_host, broker_port, 60)
+    schedule.every(60).seconds.do(conn, client)
 
     schedule.every(5).seconds.do(pub, client)
     while True:
