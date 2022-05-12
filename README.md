@@ -59,3 +59,9 @@ pip install -r requirements.txt
 See the Splunk documentation on [Getting metrics from other sources](https://docs.splunk.com/Documentation/Splunk/latest/Metrics/GetMetricsInOther).
 
 And [Python code examples](https://www.splunk.com/en_us/blog/customers/http-event-collect-a-python-class.html)] from Splunk Blogs.
+
+## Mosquitto references
+
+[Mosquitto reference](https://techoverflow.net/2021/11/25/how-to-setup-standalone-mosquitto-mqtt-broker-using-docker-compose/)
+
+[FIWARE](https://github.com/FIWARE/tutorials.IoT-over-MQTT)

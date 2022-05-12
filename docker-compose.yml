@@ -11,3 +11,11 @@ services:
     ports:
       - 8000:8000
       - 8088:8088
+
+  mosquitto:
+    image: eclipse-mosquitto
+    network_mode: host
+    volumes:
+      - ./conf:/mosquitto/conf
+      - ./data:/mosquitto/data
+      - ./log:/mosquitto/log
