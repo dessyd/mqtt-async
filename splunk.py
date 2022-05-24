@@ -5,8 +5,8 @@ from requests.exceptions import ConnectionError, HTTPError
 from requests.packages import urllib3
 from classes import Broker, HecAPI, Metric
 
-log_level=logging.DEBUG
-log_format='%(asctime)s %(message)s'
+log_level=logging.INFO
+log_format="%(asctime)s %(levelname)s %(funcName)s %(message)s"
 logging.basicConfig(level=log_level,format=log_format)
 
 def on_connect(client, userdata, flags, rc):
@@ -31,10 +31,10 @@ def hec_post(topic, payload) -> Status:
       r = requests.post(hec_api.url(), headers=hec_api.authHeader(), json=metric.post_data(), verify=False)
       r.raise_for_status()
    except ConnectionError as err: 
-      print("Splunk refused connection: %s" %err)  
+      logging.error("Splunk refused connection: %s" %err)  
       return post_status
    except HTTPError as err:
-      print("HTTP Error: %s" %err)
+      logging.error("HTTP Error: %s" %err)
       return post_status
    
    logging.debug("Successful connection to Splunk")
@@ -43,7 +43,7 @@ def hec_post(topic, payload) -> Status:
       text = r.json()["text"]
       code = r.json()["code"]
    except:
-      print("No valid JSON returned from Splunk")
+      logging.error("No valid JSON returned from Splunk")
       return post_status
 
    if code != 0:
