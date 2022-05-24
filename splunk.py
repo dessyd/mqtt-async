@@ -10,7 +10,7 @@ log_format = "%(asctime)s %(levelname)s %(funcName)s %(message)s"
 logging.basicConfig(level=log_level,format=log_format)
 
 def on_connect(client, userdata, flags, rc):
-   logging.info("Connected to MQTT With Result Code %s" %rc)
+   logging.info(f"Connected to MQTT With Result Code {rc}")
    client.subscribe(broker.topic, qos=1)
 
 def on_message(client, userdata, message):
@@ -24,17 +24,17 @@ def hec_post(topic, payload) -> Status:
    post_status = False
    metric = Metric(topic, payload)
 
-   logging.info("Topic: %s" %topic)
-   logging.info("Payload: %s" %payload)
+   logging.info(f"Topic: {topic}")
+   logging.info(f"Payload: {payload}")
 
    try:
       r = requests.post(hec_api.url(), headers=hec_api.authHeader(), json=metric.post_data(), verify=False)
       r.raise_for_status()
    except ConnectionError as err: 
-      logging.error("Splunk refused connection: %s" %err)  
+      logging.error(f"Splunk refused connection: {err}")  
       return post_status
    except HTTPError as err:
-      logging.error("HTTP Error: %s" %err)
+      logging.error(f"HTTP Error: {err}")
       return post_status
    
    logging.debug("Successful connection to Splunk")
@@ -47,9 +47,9 @@ def hec_post(topic, payload) -> Status:
       return post_status
 
    if code != 0:
-      raise Exception("Splunk error code %s" %code)
+      raise Exception(f"Splunk error code: {code}")
    else:
-      logging.info("Splunk HEC POST %s" %text)
+      logging.info(f"Splunk HEC POST: {text}")
       post_status = True
 
    return post_status
