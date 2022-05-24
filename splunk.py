@@ -1,37 +1,40 @@
-from configparser import ConfigParser
+import logging
 import paho.mqtt.client as mqtt
 import requests
-##turns off the warning that is generated below because using self signed ssl cert
-from urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
-
+from requests.exceptions import ConnectionError, HTTPError
+from requests.packages import urllib3
+from configparser import ConfigParser
 from classes import Broker, HecAPI, Metric
 
+log_level=logging.DEBUG
+logging.basicConfig(level=log_level)
+
 def on_connect(client, userdata, flags, rc):
-   print("Connected With Result Code %s" %rc)
+   logging.info("Connected to MQTT With Result Code %s" %rc)
    client.subscribe(broker.topic, qos=1)
 
 def on_message(client, userdata, message):
-   print("---")
-   # Post received message to Splunk
    hec_post(topic=message.topic, payload=message.payload.decode())
 
-def hec_post(topic, payload):
-   print("Topic: %s" %topic)
-   print("Payload: %s" %payload)
-   
+Status = bool
+def hec_post(topic, payload) -> Status:
+   """ Post received message to Splunk """
+   urllib3.disable_warnings()
+
    post_status = False
    metric = Metric(topic, payload)
+
+   logging.debug("Topic: %s" %topic)
+   logging.debug("Payload: %s" %payload)
 
    try:
       r = requests.post(hec_api.url(), headers=hec_api.authHeader(), json=metric.post_data(), verify=False)
       r.raise_for_status()
-   except requests.exceptions.ConnectionError as err: 
+   except ConnectionError as err: 
       print("Splunk refused connection: %s" %err)  
       return post_status
-   except requests.exceptions.HTTPError as err:
-      # catastrophic error. bail.
-      print("Exception %s" %err)
+   except HTTPError as err:
+      print("HTTP Error: %s" %err)
       return post_status
    
    # Connection is successful
@@ -44,41 +47,25 @@ def hec_post(topic, payload):
       return post_status
 
    if code != 0:
-      print("Splunk error code %s" %code)
+      raise Exception("Splunk error code %s" %code)
    else:
-      print(text)
+      logging.info("Splunk HEC POST %s" %text)
       post_status = True
 
    return post_status
 
 def main():
-
-   # Initialize the connection details from the config file``
-   # Each Class mirrors a stanza
-   config = ConfigParser()
-   config.read('mqtt.conf')
-
-   # Get the MQTT Broker connection details.
-   # 
-   broker_stanza = "Broker"
    global broker
-   broker = Broker(
-      host=config.get(broker_stanza,'host'), 
-      port=config.getint(broker_stanza,'port'),
-      topic=config.get(broker_stanza,'topic')
-      )
-
-   # Get the Splunk HEC details
-   # Initialized once here
-   # Used in the HEC post function
-   hec_stanza = "HecAPI"
    global hec_api
-   hec_api = HecAPI(
-      host=config.get(hec_stanza,'host'), 
-      port=config.getint(hec_stanza,'port'), 
-      token=config.get(hec_stanza,'token')
-      )
 
+   config_file = 'mqtt.conf'
+
+   broker = Broker()
+   broker.config(config_file)
+
+   hec_api = HecAPI()
+   hec_api.config(config_file)
+         
    client = mqtt.Client()
    client.on_connect = on_connect
    client.on_message = on_message
