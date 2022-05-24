@@ -1,34 +1,35 @@
+from dataclasses import dataclass, field
 import socket, time
 
 # Classes defined here are a mirror of the config file stanzas
-# Broker holds a MQTT Broker connection
+
+@dataclass
 class Broker:
-   def __init__(self, host="mqtt.eclipseprojects.io", port=1883, topic="$SYS/#"):
-      self.host = host
-      self.port = port
-      self.topic = topic
-   def __str__(self):
-      return str(self.__dict__)
+  """ Broker holds a MQTT Broker connection """
+  host: str =field(default="mqtt.eclipseprojects.io")
+  port: int =field(default=1883)
+  topic: str =field(default="$SYS/#")
 
-# HecAPI holds a Splunk HEC connection
+@dataclass
 class HecAPI:
-  def __init__(self, host="localhost", port=8088, token="00000000-0000-0000-0000-000000000000"):
-    self.host = host
-    self.port = port
-    self.token = token
-  def url(self):
-    return "https://%s:%s/services/collector" %(self.host, self.port)
-  def authHeader(self):
-    return {'Authorization' : "Splunk %s" % self.token}
-  def __str__(self):
-      return str(self.__dict__)
+  """ HecAPI holds a Splunk HEC connection """
+  host: str = field(default="localhost")
+  port: int = field(default=8088)
+  token: str = field(default="00000000-0000-0000-0000-000000000000")
 
-# Metric holds the typical payload for sending metrics via HEC
+  def url(self) -> str:
+    return "https://%s:%s/services/collector" %(self.host, self.port)
+
+  def authHeader(self) -> str:
+    return {'Authorization' : "Splunk %s" % self.token}
+    
+@dataclass
 class Metric:
-  def __init__(self, topic="Things/#", payload="0.00", sourcetype="mqtt_metric"):
-    self.topic = topic
-    self.payload = payload
-    self.sourcetype = sourcetype
+  """ Metric holds the typical payload for sending metrics via HEC """
+  topic: str = field(default="Things/#")
+  payload: str = field(default="0.0")
+  sourcetype: str = field(default="mqtt_metric")
+
   def post_data(self):
     return { 
       "time": time.time(), 
@@ -40,5 +41,3 @@ class Metric:
                "metric_name:"+self.topic.rsplit("/",1)[-1]: self.payload
                }
       }
-  def __str__(self):
-    return str(self.__dict__)
