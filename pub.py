@@ -1,13 +1,10 @@
-# from multiprocessing.connection import Client
 import paho.mqtt.client as mqtt
 import time, random, schedule, uuid
+from classes import Broker
 
-from configparser import ConfigParser
-
-config = ConfigParser()
-config.read('mqtt.conf')
-broker_host = config.get('Broker','host')
-broker_port = config.getint('Broker','port')
+config_file = 'mqtt.conf'
+broker = Broker()
+broker.config(config_file)
 board_id = str(uuid.getnode())
 
 def pub(client):
@@ -16,11 +13,12 @@ def pub(client):
     client.publish(topic=Topic, payload=Payload, qos=1, retain=False)
 
 def conn(client):
-    client.connect(broker_host, broker_port, 60)
+    client.connect(broker.host, broker.port, 60)
 
 def main():
+
     client = mqtt.Client()
-    client.connect(broker_host, broker_port, 60)
+    conn(client)
     schedule.every(60).seconds.do(conn, client)
 
     schedule.every(5).seconds.do(pub, client)
