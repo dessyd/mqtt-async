@@ -1,3 +1,4 @@
+dataclasses
 ConfigParser
 schedule
 paho-mqtt
