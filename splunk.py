@@ -6,7 +6,8 @@ from requests.packages import urllib3
 from classes import Broker, HecAPI, Metric
 
 log_level=logging.DEBUG
-logging.basicConfig(level=log_level)
+log_format='%(asctime)s %(message)s'
+logging.basicConfig(level=log_level,format=log_format)
 
 def on_connect(client, userdata, flags, rc):
    logging.info("Connected to MQTT With Result Code %s" %rc)
@@ -36,7 +37,7 @@ def hec_post(topic, payload) -> Status:
       print("HTTP Error: %s" %err)
       return post_status
    
-   # Connection is successful
+   logging.debug("Successful connection to Splunk")
    # Check Splunk return code
    try:
       text = r.json()["text"]
