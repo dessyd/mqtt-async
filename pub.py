@@ -8,7 +8,8 @@ broker.config(config_file)
 board_id = f'{uuid.getnode():x}' # get rid of leading 0x
 
 def pub(client):
-    _sensor_path = "Things/%s/dht11-%i/air." % (board_id, random.randint(0,9))
+    _sensor_number = random.randint(0,9)
+    _sensor_path = f"Things/{board_id}/dht11-{_sensor_number}/air."
     _sensors = ['temperature','humidity','pressure']
 
     for _sensor_name in _sensors:
