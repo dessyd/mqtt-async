@@ -3,7 +3,6 @@ import paho.mqtt.client as mqtt
 import requests
 from requests.exceptions import ConnectionError, HTTPError
 from requests.packages import urllib3
-from configparser import ConfigParser
 from classes import Broker, HecAPI, Metric
 
 log_level=logging.DEBUG
