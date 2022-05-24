@@ -3,3 +3,4 @@ ConfigParser
 schedule
 paho-mqtt
 requests
+types-requests
