@@ -5,8 +5,8 @@ from requests.exceptions import ConnectionError, HTTPError
 from requests.packages import urllib3
 from classes import Broker, HecAPI, Metric
 
-log_level=logging.INFO
-log_format="%(asctime)s %(levelname)s %(funcName)s %(message)s"
+log_level = logging.INFO
+log_format = "%(asctime)s %(levelname)s %(funcName)s %(message)s"
 logging.basicConfig(level=log_level,format=log_format)
 
 def on_connect(client, userdata, flags, rc):
@@ -24,8 +24,8 @@ def hec_post(topic, payload) -> Status:
    post_status = False
    metric = Metric(topic, payload)
 
-   logging.debug("Topic: %s" %topic)
-   logging.debug("Payload: %s" %payload)
+   logging.info("Topic: %s" %topic)
+   logging.info("Payload: %s" %payload)
 
    try:
       r = requests.post(hec_api.url(), headers=hec_api.authHeader(), json=metric.post_data(), verify=False)
