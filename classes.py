@@ -25,7 +25,8 @@ class NetObject:
 
 @dataclass
 class Broker(NetObject):
-  """ Broker holds a MQTT Broker connection """
+  """ Broker holds a MQTT Broker connection 
+      so it needs a topic to subscribe to """
   topic: str =field(default="$SYS/#")
 
 @dataclass
