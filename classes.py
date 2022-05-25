@@ -1,48 +1,35 @@
 import socket, time
+import logging
 from dataclasses import dataclass, field
 from configparser import ConfigParser
 
-# Classes defined here are a mirror of the config file stanzas
+@dataclass
+class NetObject:
+  host: str = field(default="localhost")
+  port: int = field(default=8000)
+
+  def config(self, config_file="default.conf") -> None:
+    """ Configure vars from corresponding stanza in config_file """
+
+    _stanza = self.__class__.__name__
+    try:
+      _config = ConfigParser()
+      _config.read(config_file)
+
+      for _var in self.__dict__ :
+        setattr(self,_var,_config.get(_stanza,_var))
+    except Exception as _e:
+      logging.ERROR('Bad config file ' + config_file + ': ' + str(_e))
 
 @dataclass
-class Broker:
+class Broker(NetObject):
   """ Broker holds a MQTT Broker connection """
-  host: str =field(default="mqtt.eclipseprojects.io")
-  port: int =field(default=1883)
   topic: str =field(default="$SYS/#")
 
-  def config(self, config_file: str) -> None:
-    """ Configure from stanza in config file """
-    try:
-      _config = ConfigParser()
-      _config.read(config_file)
-
-      _stanza = self.__class__.__name__
-      self.host=_config.get(_stanza,'host')
-      self.port=_config.getint(_stanza,'port')
-      self.topic=_config.get(_stanza,'topic')
-    except Exception as _e:
-      print('Bad config file ' + config_file + ': ' + str(_e))
-
 @dataclass
-class HecAPI:
+class HecAPI(NetObject):
   """ HecAPI holds a Splunk HEC connection """
-  host: str = field(default="localhost")
-  port: int = field(default=8088)
   token: str = field(default="00000000-0000-0000-0000-000000000000")
-
-  def config(self, config_file: str) -> None:
-    """ Configure from stanza in config file """
-    try:
-      _config = ConfigParser()
-      _config.read(config_file)
-
-      _stanza = self.__class__.__name__
-      self.host=_config.get(_stanza,'host')
-      self.port=_config.getint(_stanza,'port')
-      self.token=_config.get(_stanza,'token')
-    except Exception as _e:
-      print('Bad config file ' + config_file + ': ' + str(_e))
 
   def url(self) -> str:
     return "https://%s:%s/services/collector" %(self.host, self.port)
