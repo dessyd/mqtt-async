@@ -17,7 +17,7 @@ def pub(client):
         client.publish(topic=_sensor_path + _sensor_name, payload=_measure, qos=1, retain=False)
 
 def conn(client):
-    client.connect(broker.host, broker.port, 60)
+    client.connect(broker.host, int(broker.port), 60)
 
 def main():
 

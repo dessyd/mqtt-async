@@ -70,7 +70,7 @@ def main():
    client.on_connect = on_connect
    client.on_message = on_message
 
-   client.connect(broker.host, broker.port, 60)
+   client.connect(broker.host, int(broker.port), 60)
 
    client.loop_forever()
 
