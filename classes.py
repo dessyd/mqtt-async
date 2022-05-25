@@ -18,6 +18,8 @@ class NetObject:
 
       for _var in self.__dict__ :
         setattr(self,_var,_config.get(_stanza,_var))
+      _port = int(self.port)
+      self.port = _port
     except Exception as _e:
       logging.ERROR('Bad config file ' + config_file + ': ' + str(_e))
 
