@@ -6,7 +6,7 @@ from configparser import ConfigParser
 @dataclass
 class NetObject:
   host: str = field(default="localhost")
-  port: int = field(default=8000)
+  port: int = field(default="8000")
 
   def config(self, config_file="default.conf") -> None:
     """ Configure vars from corresponding stanza in config_file """
@@ -18,10 +18,11 @@ class NetObject:
 
       for _var in self.__dict__ :
         setattr(self,_var,_config.get(_stanza,_var))
-      _port = int(self.port)
-      self.port = _port
+
     except Exception as _e:
-      logging.ERROR(f'Config file {config_file} error: {_e}')
+      logging.warning(f'file {config_file} error: {_e}')
+    _port = int(self.port)
+    self.port = _port
 
 @dataclass
 class Broker(NetObject):
