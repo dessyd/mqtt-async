@@ -6,7 +6,7 @@ from configparser import ConfigParser
 @dataclass
 class NetObject:
   host: str = field(default="localhost")
-  port: int = field(default="8000")
+  port: int = field(default=8000)
 
   def config(self, config_file="default.conf") -> None:
     """ Configure vars from corresponding stanza in config_file """
@@ -21,6 +21,8 @@ class NetObject:
 
     except Exception as _e:
       logging.warning(f'file {config_file} error: {_e}')
+
+    # Convert initialized value back to <int> instead of <str>
     _port = int(self.port)
     self.port = _port
 
