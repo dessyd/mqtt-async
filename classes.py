@@ -21,7 +21,7 @@ class NetObject:
       _port = int(self.port)
       self.port = _port
     except Exception as _e:
-      logging.ERROR('Bad config file ' + config_file + ': ' + str(_e))
+      logging.ERROR(f'Config file {config_file} error: {_e}')
 
 @dataclass
 class Broker(NetObject):
@@ -35,10 +35,10 @@ class HecAPI(NetObject):
   token: str = field(default="00000000-0000-0000-0000-000000000000")
 
   def url(self) -> str:
-    return "https://%s:%s/services/collector" %(self.host, self.port)
+    return f"https://{self.host}:{self.port}/services/collector"
 
   def authHeader(self):
-    return {'Authorization' : "Splunk %s" % self.token}
+    return {'Authorization' : f'Splunk {self.token}'}
 
 @dataclass
 class Metric:
