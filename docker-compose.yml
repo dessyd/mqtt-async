@@ -1,23 +1,6 @@
 version: "3.6"
 
 services:
-  so1:
-    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
-    container_name: so1
-    environment:
-      - SPLUNK_START_ARGS=--accept-license
-      - SPLUNK_HEC_TOKEN={SPLUNK_HEC_TOKEN}
-      - SPLUNK_PASSWORD
-    ports:
-      - 8000:8000
-      - 8088:8088
-      
-  mosquitto:
-    image: eclipse-mosquitto
-    volumes:
-      - ./conf:/mosquitto/conf
-      - ./data:/mosquitto/data
-      - ./log:/mosquitto/log
-    ports:
-      - 1883:1883
-      - 9001:9001
+  send2hec:
+    image: send2hec
+    build: .
