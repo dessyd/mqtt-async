@@ -32,7 +32,7 @@ If the MQTT topic `Things/board-002596FFFE123456/dht11-3/air.humidity` has a pay
 
 #### Splunk Analytics dashboard example
 
-![Splunk_Metrics](images/Splunk_Metrics.png)
+![Splunk_Metrics](pictures/Splunk_Metrics.png)
 
 ## Configuration file
 
