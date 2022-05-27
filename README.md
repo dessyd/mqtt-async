@@ -65,3 +65,5 @@ And [Python code examples](https://www.splunk.com/en_us/blog/customers/http-even
 [Mosquitto reference](https://techoverflow.net/2021/11/25/how-to-setup-standalone-mosquitto-mqtt-broker-using-docker-compose/)
 
 [FIWARE](https://github.com/FIWARE/tutorials.IoT-over-MQTT)
+
+[Docker Mosquitto configuration](https://techoverflow.net/2021/11/25/how-to-setup-standalone-mosquitto-mqtt-broker-using-docker-compose/)
