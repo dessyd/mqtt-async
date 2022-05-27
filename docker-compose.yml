@@ -7,3 +7,9 @@ services:
       context: send2hec
       args:
         GIT_HASH: ${GIT_HASH}
+  pub:
+    image: pub
+    build:
+      context: pub
+      args:
+        GIT_HASH: ${GIT_HASH}
