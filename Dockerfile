@@ -1,3 +1,4 @@
+# Ref: https://www.pybootcamp.com/blog/how-to-write-dockerfile-python-apps/ 
 FROM python:3.9-slim-buster
 
 WORKDIR /app

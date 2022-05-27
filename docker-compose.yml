@@ -3,4 +3,7 @@ version: "3.6"
 services:
   send2hec:
     image: send2hec
-    build: .
+    build:
+      context: .
+      args:
+        GIT_HASH: ${GIT_HASH}
