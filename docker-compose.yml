@@ -4,6 +4,6 @@ services:
   send2hec:
     image: send2hec
     build:
-      context: .
+      context: send2hec
       args:
         GIT_HASH: ${GIT_HASH}

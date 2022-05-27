@@ -1,0 +1,5 @@
+dataclasses
+ConfigParser
+paho-mqtt
+requests
+types-requests
