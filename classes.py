@@ -51,16 +51,21 @@ class Metric:
   sourcetype: str = field(default="mqtt_metric")
 
   def post_data(self):
-    """ Create JSON expected by Splunk HEC for metrics """
+    """ Create JSON expected by Splunk HEC for metrics 
+    The expected Topic structure is the following
+    /Things/<board_id>/<sensor_type>/<measure_name>
+    Payload holding the <measured_value> 
+    """
+    _sub_topics = self.topic.rsplit("/",3)
     return { 
       "time": time.time(), 
       "host": socket.gethostname(),
       "event": "metric",
       "source": "metrics",
       "sourcetype": self.sourcetype,
-      # Latest subtopic is considered to be the measurement name
-      # payload being the measured value
-      "fields": {"topic": self.topic, 
-               "metric_name:"+self.topic.rsplit("/",1)[-1]: self.payload
-               }
+      "fields": {
+        "board_id": _sub_topics[-3],
+        "sensor_type": _sub_topics[-2],
+        "metric_name:"+_sub_topics[-1]: self.payload
+        }
       }
