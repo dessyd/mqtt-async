@@ -52,9 +52,9 @@ class Metric:
 
   def post_data(self):
     """ Create JSON expected by Splunk HEC for metrics 
-    The expected Topic structure is the following
-    /Things/<board_id>/<sensor_type>/<measure_name>
-    Payload holding the <measured_value> 
+    The expected topic structure is the following
+    /Things/<board_id>/<sensor_type>/<metric_name>
+    payload holding the <metric_value> 
     """
     _sub_topics = self.topic.rsplit("/",3)
     return { 
