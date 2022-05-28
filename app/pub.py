@@ -1,13 +1,12 @@
+import os
 import random
 import time
 import uuid
-import os
 
 import paho.mqtt.client as mqtt
 import schedule
-from dotenv import load_dotenv
-
 from classes import Broker
+from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 config_file = os.getenv("CONFIG_FILE")
@@ -23,9 +22,7 @@ def pub(client):
 
     for _sensor_name in _sensors:
         _measure = random.randint(0, 10000) / 100
-        client.publish(
-            topic=f"{_sensor_path}{_sensor_name}", payload=_measure, qos=1, retain=False
-        )
+        client.publish(topic=f"{_sensor_path}{_sensor_name}", payload=_measure, qos=1, retain=False)
 
 
 def conn(client):
