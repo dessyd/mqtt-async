@@ -3,3 +3,5 @@ ConfigParser
 paho-mqtt
 requests
 types-requests
+python-dotenv
+schedule

@@ -1,13 +1,16 @@
 import random
 import time
 import uuid
+import os
 
 import paho.mqtt.client as mqtt
 import schedule
+from dotenv import load_dotenv
 
 from classes import Broker
 
-config_file = "mqtt.conf"
+load_dotenv()  # take environment variables from .env.
+config_file = os.getenv("CONFIG_FILE")
 broker = Broker()
 broker.config(config_file)
 board_id = f"{uuid.getnode():x}"  # get rid of leading 0x
