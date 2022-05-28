@@ -1,5 +1,6 @@
-import logging
 import os
+import logging
+
 import paho.mqtt.client as mqtt
 import requests
 from classes import Broker, HecAPI, Metric
