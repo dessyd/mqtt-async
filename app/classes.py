@@ -7,7 +7,7 @@ from configparser import ConfigParser
 @dataclass
 class NetObject:
     host: str = field(default="localhost")
-    port: int = field(default=8000)
+
 
     def config(self, config_file="default.conf") -> None:
         """Configure vars from corresponding stanza in config_file"""
@@ -17,7 +17,7 @@ class NetObject:
             _config = ConfigParser()
             _config.read(config_file)
 
-            for _var in self.__dict__:
+            for _var in _config[_stanza]:
                 setattr(self, _var, _config.get(_stanza, _var))
 
         except Exception as _e:
@@ -32,14 +32,14 @@ class NetObject:
 class Broker(NetObject):
     """Broker holds a MQTT Broker connection
     so it needs a topic to subscribe to"""
-
-    topic: str = field(default="$SYS/#")
+    port: int = field(default=1883)
+    topic: str = field(default="Things/#")
 
 
 @dataclass
 class HecAPI(NetObject):
     """HecAPI holds a Splunk HEC connection"""
-
+    port: int = field(default=8088)
     token: str = field(default="00000000-0000-0000-0000-000000000000")
 
     def url(self) -> str:
