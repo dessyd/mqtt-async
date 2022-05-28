@@ -55,7 +55,7 @@ def hec_post(topic, payload) -> Status:
     try:
         text = r.json()["text"]
         code = r.json()["code"]
-    except:
+    except Exception:
         logging.error("No valid JSON returned from Splunk")
         return post_status
 

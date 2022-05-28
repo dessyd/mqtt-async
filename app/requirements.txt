@@ -5,3 +5,5 @@ requests
 types-requests
 python-dotenv
 schedule
+pre-commit
+black

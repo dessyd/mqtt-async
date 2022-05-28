@@ -22,7 +22,9 @@ def pub(client):
 
     for _sensor_name in _sensors:
         _measure = random.randint(0, 10000) / 100
-        client.publish(topic=f"{_sensor_path}{_sensor_name}", payload=_measure, qos=1, retain=False)
+        client.publish(
+            topic=f"{_sensor_path}{_sensor_name}", payload=_measure, qos=1, retain=False
+        )
 
 
 def conn(client):
