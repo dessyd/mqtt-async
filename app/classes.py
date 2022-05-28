@@ -1,13 +1,13 @@
-import socket, time
 import logging
-from dataclasses import dataclass, field
+import socket
+import time
 from configparser import ConfigParser
+from dataclasses import dataclass, field
 
 
 @dataclass
 class NetObject:
     host: str = field(default="localhost")
-
 
     def config(self, config_file="default.conf") -> None:
         """Configure vars from corresponding stanza in config_file"""
@@ -32,6 +32,7 @@ class NetObject:
 class Broker(NetObject):
     """Broker holds a MQTT Broker connection
     so it needs a topic to subscribe to"""
+
     port: int = field(default=1883)
     topic: str = field(default="Things/#")
 
@@ -39,6 +40,7 @@ class Broker(NetObject):
 @dataclass
 class HecAPI(NetObject):
     """HecAPI holds a Splunk HEC connection"""
+
     port: int = field(default=8088)
     token: str = field(default="00000000-0000-0000-0000-000000000000")
 
