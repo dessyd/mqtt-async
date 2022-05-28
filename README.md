@@ -51,6 +51,9 @@ python -` python3 -` /opt/homebrew/Cellar/python@3.9/3.9.12/Frameworks/Python.fr
 pip install --upgrade pip
 # install project's requirements
 pip install -r requirements.txt
+# Pre commit requirements see: https://www.the-analytics.club/python-code-formatting-git-pre-commit-hook
+pip install isort autoflake black pre-commit
+pre-commit install
 
 ```
 
