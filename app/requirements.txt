@@ -1,9 +1,9 @@
-dataclasses
-ConfigParser
-paho-mqtt
-requests
-types-requests
-python-dotenv
-schedule
-pre-commit
 black
+ConfigParser
+dataclasses
+paho-mqtt
+pre-commit
+python-dotenv
+requests
+schedule
+types-requests
