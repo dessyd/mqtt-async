@@ -1,10 +1,6 @@
-black
 ConfigParser
 dataclasses
-flake8
-isort
 paho-mqtt
-pre-commit
 python-dotenv
 requests
 schedule
