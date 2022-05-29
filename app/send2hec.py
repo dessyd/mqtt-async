@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 import paho.mqtt.client as mqtt
 import requests
@@ -14,8 +15,9 @@ logging.basicConfig(level=log_level, format=log_format)
 
 
 def on_connect(client, userdata, flags, rc):
-    logging.info(f"Connected to MQTT With Result Code {rc}")
-    client.subscribe(broker.topic, qos=1)
+    if rc == 0:
+        logging.info(f"Connected to MQTT With Result Code {rc}")
+        client.subscribe(broker.topic, qos=1)
 
 
 def on_message(client, userdata, message):
@@ -88,7 +90,12 @@ def main():
     client.on_connect = on_connect
     client.on_message = on_message
 
-    client.connect(broker.host, broker.port, 60)
+    try:
+        logging.debug(f"Connecting to {broker.host}:{broker.port}")
+        client.connect(broker.host, broker.port, 60)
+    except Exception as _err:
+        logging.error(f"Connection to {broker.host}:{broker.port} failed: {_err}")
+        sys.exit(1)
 
     client.loop_forever()
 
