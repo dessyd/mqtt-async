@@ -43,11 +43,14 @@ def hec_post(topic, payload) -> Status:
             verify=False,
         )
         r.raise_for_status()
-    except ConnectionError as err:
-        logging.error(f"Splunk refused connection: {err}")
+    except ConnectionError as _err:
+        logging.error(f"Splunk refused connection: {_err}")
         return post_status
-    except HTTPError as err:
-        logging.error(f"HTTP Error: {err}")
+    except HTTPError as _err:
+        logging.error(f"HTTP Error: {_err}")
+        return post_status
+    except Exception as _err:
+        logging.error(_err)
         return post_status
 
     logging.debug("Successful connection to Splunk")
@@ -55,8 +58,8 @@ def hec_post(topic, payload) -> Status:
     try:
         text = r.json()["text"]
         code = r.json()["code"]
-    except Exception:
-        logging.error("No valid JSON returned from Splunk")
+    except Exception as err:
+        logging.error(f"No valid JSON returned from Splunk; {err}")
         return post_status
 
     if code != 0:
