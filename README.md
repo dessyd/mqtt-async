@@ -51,7 +51,7 @@ pip install --upgrade pip
 # install project's requirements
 pip install -r requirements.txt
 # Pre commit requirements see: https://www.the-analytics.club/python-code-formatting-git-pre-commit-hook
-pip install isort flake8 black pre-commit
+pip install pre-commit
 pre-commit install
 
 ```
