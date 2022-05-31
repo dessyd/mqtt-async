@@ -28,7 +28,17 @@ Status = bool
 
 
 def hec_post(topic, payload) -> Status:
-    """Post received message to Splunk"""
+    """Post received messqage to Splunk
+
+    Transfer the payload received to Splunk using HTTP Event Collector
+
+    Args:
+        topic (str): The full topic path subscribed
+        patload (str): the measured value
+
+    Returns:
+       Status: bool the execution status of the POST
+    """
     urllib3.disable_warnings()
 
     post_status = False
