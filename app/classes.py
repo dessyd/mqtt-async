@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 class NetObject:
     host: str = field(default="localhost")
 
-    def config(self, config_file="default.conf") -> None:
+    def config(self, config_file="mqtt.conf") -> None:
         """Configure vars from corresponding stanza in config_file"""
 
         _stanza = self.__class__.__name__

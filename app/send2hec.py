@@ -44,8 +44,9 @@ def hec_post(topic, payload) -> Status:
     post_status = False
     metric = Metric(topic, payload)
 
-    logging.info(f"Topic: {topic}")
-    logging.info(f"Payload: {payload}")
+    logging.info(f"Topic: {metric.topic}")
+    logging.info(f"Payload: {metric.payload}")
+    logging.info(f"SourceType: {metric.sourcetype}")
 
     try:
         r = requests.post(
