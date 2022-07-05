@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from requests.exceptions import ConnectionError, HTTPError
 from requests.packages import urllib3
 
-log_level = logging.INFO
+log_level = logging.DEBUG
 log_format = "%(asctime)s %(levelname)s %(funcName)s %(message)s"
 logging.basicConfig(level=log_level, format=log_format)
 
