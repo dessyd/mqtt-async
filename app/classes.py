@@ -66,15 +66,17 @@ class Metric:
         payload holding the <metric_value>
         """
         _sub_topics = self.topic.rsplit("/", 3)
-        return {
-            "time": time.time(),
-            "host": socket.gethostname(),
-            "event": "metric",
-            "source": "metrics",
-            "sourcetype": self.sourcetype,
-            "fields": {
-                "board_id": _sub_topics[-3],
-                "sensor_type": _sub_topics[-2],
-                "metric_name:" + _sub_topics[-1]: self.payload,
-            },
-        }
+        fields = {}
+        fields.update({"board_id": _sub_topics[-3]})
+        fields.update({"sensor_type": _sub_topics[-2]})
+        fields.update({"metric_name:" + _sub_topics[-1]: self.payload})
+
+        post_data = {}
+        post_data.update({"time": time.time()})
+        post_data.update({"host": socket.gethostname()})
+        post_data.update({"event": "metric"})
+        post_data.update({"source": "metrics"})
+        post_data.update({"sourcetype": self.sourcetype})
+        post_data.update({"fields": fields})
+
+        return post_data
